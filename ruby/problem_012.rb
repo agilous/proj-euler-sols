@@ -17,52 +17,23 @@
 #We can see that 28 is the first triangle number to have over five divisors.
 
 #What is the value of the first triangle number to have over five hundred divisors?
+require '../utils/factorer'
 
 stime = Time.now.to_f
 
 divisors = Array.new
 i = 1
 triangle_number = i
-
-def is_square(n)
-  (Math.sqrt(n).floor)**2 == n
-end
-
-def fermat_factor(n)
-  factors = [1,n].uniq
-  ((Math.sqrt(n).ceil)..n).each do |x|
-    y_squared = x * x - n
-    if is_square(y_squared)
-      y = Math.sqrt(y_squared).to_i
-      s = (x - y).to_i
-      t = (x + y).to_i
-      if s != 1 && s != n
-        factors = (factors + [s, t]).uniq
-      end
-    end
-  end
-  factors.sort
-end
-
-def factor(n)
-  if n < 1
-    nil
-  elsif n == 1
-    [1]
-  else
-    factors = [1]
-    (2..n).each do |i|
-      factors = factors << i if n % i == 0
-    end
-    factors
-  end
-end
-
-while divisors.size < 500
-  divisors = factor(triangle_number)
+max_divisors = 0
+factorers_table = {}
+while divisors.size <= 500
+  factorer = Factorer.new(factorers_table)
+  divisors = factorer.factor(triangle_number)
+  factorers_table = factorer.factorers_table
   i = i + 1
   triangle_number = triangle_number + i
-# puts "i = #{i}, triangle number = #{triangle_number}, divisors = #{divisors}"
+  max_divisors = divisors.count if divisors.count > max_divisors
+  puts "i = #{i}, triangle number = #{triangle_number}, # of divisors = #{divisors.count}, max divisors = #{max_divisors}"
 end
 ftime = Time.now.to_f
 
